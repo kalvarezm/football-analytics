@@ -11,9 +11,10 @@ output:
 ```{r include=FALSE}
 library(tidyverse)
 library(data.table)
+library(tictoc) #measure time
 ```
 
-# Dataset
+## Dataset
 
 Source:
 - https://www.kaggle.com/martj42/international-football-results-from-1872-to-2017
@@ -25,11 +26,104 @@ data_matches <-
   fread(
     file_path,
     data.table = TRUE,
-    sep = ","
+    sep = ",",
+    encoding = "UTF-8"
+  )
+```
+
+## Exploring data
+
+```{r}
+head(data_matches)
+```
+
+```{r}
+str(data_matches)
+```
+## Wrangling
+
+```{r}
+tic("Wrangling")
+data_matches_v2 <-
+data_matches %>%
+  dplyr::rowwise() %>%
+  mutate(
+    # Concatenate and order teams in order to create an unique match
+    match = paste(sort(c(home_team, away_team)), collapse = " vs ")
+  ) %>%
+  ungroup() %>%
+  relocate(match, .before = home_team)
+toc()
+```
+```{r}
+data_matches_v2
+```
+## Questions
+
+### List of most played games
+
+```{r}
+data_matches_v2 %>%
+  group_by(match) %>%
+  summarise(
+    n = n()
+  ) %>%
+  arrange(desc(n)) %>%
+  slice(1:25)
+```
+### List of most played games for Peruvian Team
+
+```{r}
+data_matches_v2 %>%
+  filter(home_team == "Peru" | away_team == "Peru") %>%
+  group_by(match) %>%
+  summarise(
+    n = n()
+  ) %>%
+  arrange(desc(n)) %>%
+  slice(1:25)
+```
+### List of played games between two teams
+
+```{r}
+team_1 <- "Peru"
+team_2 <- "Paraguay"
+```
+
+```{r}
+match_filtered <-
+  data_matches_v2 %>%
+    filter(home_team == team_1 | away_team == team_1) %>%
+    filter(home_team == team_2 | away_team == team_2) %>%
+    mutate(win = case_when(
+        (home_team == team_1 & home_score > away_score) ~ 1,
+        (away_team == team_1 & away_score > home_score) ~ 1,
+        TRUE ~ 0
+      )) %>%
+    mutate(draw = case_when(
+        (home_score == away_score) ~ 1,
+        TRUE ~ 0
+      )) %>%    
+    mutate(lose = case_when(
+        (home_team == team_1 & home_score < away_score) ~ 1,
+        (away_team == team_1 & away_score < home_score) ~ 1,
+        TRUE ~ 0
+      )) %>%  
+    arrange(desc(date))
+match_filtered
+```
+```{r}
+match_filtered %>%
+  group_by(match) %>%
+  summarise(
+    MP = n(),
+    G = sum(win),
+    D = sum(draw),
+    L = sum(lose)
   )
 ```
 
 ```{r}
-data_matches
+gc()
 ```
 

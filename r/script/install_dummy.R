@@ -31,3 +31,9 @@ devtools::session_info() #wrote here only for make visible packages in renv
 #https://www.tidyverse.org
 #------------------------------------
 tidyverse::tidyverse_logo()
+
+#------------------------------------
+#INSTALL tictoc 
+#https://github.com/collectivemedia/tictoc
+#------------------------------------
+tictoc::toc()

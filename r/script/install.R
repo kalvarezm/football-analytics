@@ -48,3 +48,9 @@ install.packages("devtools")
 #https://www.tidyverse.org
 #------------------------------------
 install.packages("tidyverse")
+
+#------------------------------------
+#INSTALL tictoc 
+#https://github.com/collectivemedia/tictoc
+#------------------------------------
+install.packages("tictoc")
