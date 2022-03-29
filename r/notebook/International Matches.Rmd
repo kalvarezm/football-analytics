@@ -1,0 +1,35 @@
+---
+title: "Analytics"
+output: 
+  html_notebook:
+    number_sections: true
+    toc: yes
+---
+
+# International Matches
+
+```{r include=FALSE}
+library(tidyverse)
+library(data.table)
+```
+
+# Dataset
+
+Source:
+- https://www.kaggle.com/martj42/international-football-results-from-1872-to-2017
+- https://github.com/martj42/international_results
+
+```{r}
+file_path <- "../../data/International Matches.csv"
+data_matches <- 
+  fread(
+    file_path,
+    data.table = TRUE,
+    sep = ","
+  )
+```
+
+```{r}
+data_matches
+```
+
